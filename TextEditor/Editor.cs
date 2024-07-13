@@ -4,9 +4,18 @@ public partial class Editor
 {
     private bool _shouldQuit = false;
     private readonly char _columnChar = '~';
-    private TextBuffer _buffer = new ();
+    private TextBuffer _buffer;
     public Editor() 
     {
+        Terminal.Initialize();
+        Terminal.OnCtrlQPressed += Quit;
+        _buffer = new TextBuffer();
+        ReadBuffer();
+    }
+
+    public Editor(string fileName)
+    {
+        _buffer = new TextBuffer(fileName);
         Terminal.Initialize();
         Terminal.OnCtrlQPressed += Quit;
         ReadBuffer();

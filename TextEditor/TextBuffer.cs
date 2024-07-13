@@ -10,10 +10,33 @@ internal class TextBuffer
     /// A new line means a new element of the list
     /// </summary>
     public List<StringBuilder> Text;
+    public StreamReader TextReader;
+    readonly private string _filePath;
     public TextBuffer()
     {
         Text = new List<StringBuilder>();
-        Text.Add(new StringBuilder("Hello, World!"));
+    } 
+    public TextBuffer(string filePath)
+    {
+        Text = new List<StringBuilder>();
+        _filePath = filePath;
+        ReadText();
+
+    }
+
+    public void ReadText() 
+    {
+        try
+        {
+            foreach(var line in File.ReadLines(_filePath))
+            {
+                Text.Add(new StringBuilder(line));
+            }
+        }
+        catch (Exception)
+        {
+            Text.Add(new StringBuilder("File not found :("));
+        }
     }
 
     

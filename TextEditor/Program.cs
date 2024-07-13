@@ -6,9 +6,21 @@ using TextEditor;
 partial class Program
 {
     
-    static void Main()
+    static void Main(string[] args)
     {
-        var editor = new Editor();
+
+        string fileName = args[0] ?? "";
+        Console.WriteLine(args);
+        Console.ReadLine();
+        Editor editor;
+        if(fileName.Length < 1)
+        {
+            editor = new Editor();
+        }
+        else
+        {
+            editor = new Editor(fileName);
+        }
 
         editor.Run();
     }
