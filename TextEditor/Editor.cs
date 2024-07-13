@@ -1,16 +1,25 @@
 ﻿
-using System.Globalization;
-
 namespace TextEditor;
 public partial class Editor
 {
     private bool _shouldQuit = false;
     private readonly char _columnChar = '~';
+    private TextBuffer _buffer = new ();
     public Editor() 
     {
         Terminal.Initialize();
+        Terminal.OnCtrlQPressed += Quit;
+        ReadBuffer();
     }
 
+    private void ReadBuffer()
+    {
+        for (int line = 0; line < _buffer.Text.Count; line++)
+        {
+            Terminal.MoveCursorTo(2, line);
+            Terminal.Print(_buffer.Text[line].ToString());
+        }
+    }
 
     public void Run()
     {
@@ -20,10 +29,9 @@ public partial class Editor
             // Holds all the information of the pressed key
             try
             {
-                ConsoleKeyInfo input = Console.ReadKey(intercept: true);
                 Refresh();
-                
-                HandlePressedKey(input);
+                ConsoleKeyInfo input = Console.ReadKey(intercept: true);
+                Terminal.HandlePressedKey(input);
 
             }
             catch (Exception e)
@@ -64,122 +72,13 @@ public partial class Editor
                 DrawWelcomeMessage();
             }
 
-
         }
 
     }
 
-    private void HandlePressedKey(ConsoleKeyInfo input)
-    {
-        ConsoleKey key = input.Key;
-
-        ConsoleModifiers modifiers = input.Modifiers;
-
-        switch (modifiers, key)
-        {
-            case (ConsoleModifiers.Control, ConsoleKey.Q):
-                Quit();
-                break;
-            case (_, ConsoleKey.LeftArrow):
-                MoveCaretToLeft();
-                break;
-            case (_, ConsoleKey.RightArrow):
-                MoveCaretToRight();
-                break;
-            case (_, ConsoleKey.UpArrow):
-                MoveCaretToPreviousLine();
-                break;
-            case (_, ConsoleKey.DownArrow):
-                MoveCaretToNextLine();
-                break;
-            case (_, ConsoleKey.Home):
-                MoveCaretToStart();
-                break;
-            case (_, ConsoleKey.End):
-                MoveCaretToEnd();
-                break;
-            case (_, ConsoleKey.PageUp):
-                MoveToPreviousPage();
-                break;
-            case (_, ConsoleKey.PageDown):
-                MoveToNextPage();
-                break;
-            default:
-                Terminal.Print(input.KeyChar);
-                break;
-
-        }
-    }
-
-    private  void MoveCaretToEnd()
-    {
-        Terminal.MoveCursorTo(Terminal.Columns - 1, Terminal.Lines - 1);
-    }
-
-    private void MoveCaretToStart()
-    {
-        Terminal.MoveCursorTo(2, 0);
-    }
-
-    private void MoveToNextPage()
-    {
-        int nextPagePosition = Console.CursorTop + Terminal.Lines - 1;
-
-        if(nextPagePosition > Terminal.Lines - 1) { nextPagePosition = Terminal.Lines - 1; }
-
-        MoveCaretToLine(nextPagePosition);
-    }
-
-    private void MoveToPreviousPage()
-    {
-        int previousPageLine = Console.CursorLeft - Terminal.Lines - 1;
-
-        if(previousPageLine < 0) { previousPageLine = 0; }
-
-        MoveCaretToLine(previousPageLine);
-    }
-
-    private void MoveCaretToNextLine()
-    {
     
-        int futureLinePosition = Console.CursorTop + 1;
 
-        MoveCaretToLine(futureLinePosition);
-    }
-
-    private void MoveCaretToPreviousLine()
-    {
-        int futureLinePosition = Console.CursorTop - 1;
-
-        MoveCaretToLine(futureLinePosition);
-    }
-
-
-    private void MoveCaretToRight()
-    {
-        int futureRightPosition = Console.CursorLeft + 1;
-        if (futureRightPosition >= Terminal.Columns) return;
-
-        Terminal.MoveCursorTo(futureRightPosition, Console.CursorTop);
-    }
-    private void MoveCaretToLine(int futureLinePosition)
-    {
-        if(futureLinePosition < 0) 
-        {
-            return;
-        }
-        Terminal.MoveCursorTo(Console.CursorLeft, futureLinePosition);
-    }
-
-    private void MoveCaretToLeft()
-    {
-        int futureLeftPosition = Console.CursorLeft - 1;
-        if (futureLeftPosition < 2) return;
-
-        Terminal.MoveCursorTo(futureLeftPosition, Console.CursorTop);
-    }
-
-    private void Quit()
+    private void Quit(object sender, EventArgs e)
     {
         _shouldQuit = true;
 

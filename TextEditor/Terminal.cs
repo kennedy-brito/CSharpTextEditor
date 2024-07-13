@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TextEditor;
-public class Terminal
+public partial class Terminal
 {
     // Constantes para os modos de entrada e saída do console
     const uint ENABLE_PROCESSED_INPUT = 0x0001;         //00001
