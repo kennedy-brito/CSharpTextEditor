@@ -50,18 +50,18 @@ public class Terminal
     {
         EnableRawMode();
         ClearScreen();
-        MoveCursorTo(new Position(0, 0));
+        MoveCursorTo(0, 0);
     }
 
     public static void Terminate() => DisableRawMode();
 
-    public static void MoveCursorTo(Position position)
+    public static void MoveCursorTo(int left, int top)
     {
-        if(position.X < 0 || position.Y> Console.WindowHeight)
+        if(left < 0 || top> Console.WindowHeight)
         {
             throw new ArgumentException("Invalid position of the cursor");
         }
-        Console.SetCursorPosition(position.X, position.Y);
+        Console.SetCursorPosition(left, top);
     }
 
     public static void ClearLine()
@@ -79,8 +79,8 @@ public class Terminal
     public static void Print(char text) => Console.Write(text);
 
     public static Size GetSize() => new Size(
-        (ushort)Console.WindowHeight, 
-        (ushort)Console.WindowWidth);
+        width: (ushort)Console.WindowWidth, 
+        height: (ushort)Console.WindowHeight);
     public static void ClearScreen() => Console.Clear();
     
 
