@@ -12,6 +12,7 @@ internal class TextBuffer
     public List<StringBuilder> Text;
     public StreamReader TextReader;
     readonly private string _filePath;
+    public bool IsEmpty { get => Text.Count < 1; }
     public TextBuffer()
     {
         Text = new List<StringBuilder>();
@@ -33,9 +34,10 @@ internal class TextBuffer
                 Text.Add(new StringBuilder(line));
             }
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            Text.Add(new StringBuilder("File not found :("));
+            Console.WriteLine(e.ToString());
+            throw;
         }
     }
 

@@ -10,7 +10,7 @@ public partial class Editor
         Terminal.Initialize();
         Terminal.OnCtrlQPressed += Quit;
         _buffer = new TextBuffer();
-        ReadBuffer();
+        Refresh();
     }
 
     public Editor(string fileName)
@@ -18,16 +18,7 @@ public partial class Editor
         _buffer = new TextBuffer(fileName);
         Terminal.Initialize();
         Terminal.OnCtrlQPressed += Quit;
-        ReadBuffer();
-    }
-
-    private void ReadBuffer()
-    {
-        for (int line = 0; line < _buffer.Text.Count; line++)
-        {
-            Terminal.MoveCursorTo(2, line);
-            Terminal.Print(_buffer.Text[line].ToString());
-        }
+        Refresh();
     }
 
     public void Run()
@@ -38,7 +29,6 @@ public partial class Editor
             // Holds all the information of the pressed key
             try
             {
-                Refresh();
                 ConsoleKeyInfo input = Console.ReadKey(intercept: true);
                 Terminal.HandlePressedKey(input);
 
@@ -71,22 +61,32 @@ public partial class Editor
     private void DrawRows()
     {
         int windowLines= Terminal.Lines;
+
         for(int currentLine = 0; currentLine < windowLines; currentLine++)
         { 
            Terminal.MoveCursorTo(0, currentLine);
-           Terminal.Print(_columnChar);
             
-            if(currentLine == windowLines/3) 
+            if(currentLine == windowLines/3  && _buffer.IsEmpty) 
             {
                 DrawWelcomeMessage();
             }
+            else if (currentLine < _buffer.Text.Count)
+            {
+                Terminal.MoveCursorTo(2, currentLine);
+                Terminal.Print(_buffer.Text[currentLine].ToString());
+            }
+            else
+            {
+                DrawEmptyLine();
+            }
+
 
         }
 
     }
 
-    
 
+    private void DrawEmptyLine() => Terminal.Print(_columnChar);
     private void Quit(object sender, EventArgs e)
     {
         _shouldQuit = true;
@@ -103,7 +103,7 @@ public partial class Editor
 
         int messageInitialColumn = screenWidth/2 - message.Length/2;
 
-        Terminal.Print($"{new string(' ', messageInitialColumn - 1)}{message}");
+        Terminal.Print($"~{new string(' ', messageInitialColumn - 1)}{message}");
 
     }
 

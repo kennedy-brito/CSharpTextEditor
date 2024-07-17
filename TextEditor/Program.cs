@@ -9,9 +9,8 @@ partial class Program
     static void Main(string[] args)
     {
 
-        string fileName = args[0] ?? "";
-        Console.WriteLine(args);
-        Console.ReadLine();
+        string fileName = args.Length > 0 ? args[0] : "";
+        
         Editor editor;
         if(fileName.Length < 1)
         {
